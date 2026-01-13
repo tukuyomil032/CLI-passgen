@@ -10,7 +10,8 @@ on:
       - 'v*'
 
 jobs:
-  build-and-publish:
+  build:
+    name: Build sdist/wheel
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,23 +30,122 @@ jobs:
         run: |
           python -m build --sdist --wheel
 
+      - name: Upload Python distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dists
+          path: dist/*.tar.gz
+
+  build-binaries:
+    name: Build native binaries
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+
+      - name: Build standalone executable
+        run: |
+          python scripts/build.py
+
+      - name: Package binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-artifacts
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            # zip the exe
+            if [ -f dist/passgen.exe ]; then
+              zip -j release-artifacts/passgen-windows-amd64.zip dist/passgen.exe
+            else
+              echo "Expected dist/passgen.exe not found" >&2; exit 2
+            fi
+          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+            if [ -f dist/passgen ]; then
+              tar -czf release-artifacts/passgen-macos-amd64.tar.gz -C dist passgen
+            else
+              echo "Expected dist/passgen not found" >&2; exit 2
+            fi
+          else
+            if [ -f dist/passgen ]; then
+              tar -czf release-artifacts/passgen-linux-amd64.tar.gz -C dist passgen
+            else
+              echo "Expected dist/passgen not found" >&2; exit 2
+            fi
+          fi
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-artifacts-${{ matrix.os }}
+          path: release-artifacts/*
+
+  publish-release:
+    name: Create GitHub Release and upload artifacts
+    runs-on: ubuntu-latest
+    needs: [build, build-binaries]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download python dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-dists
+          path: ./release-artifacts
+
+      - name: Download native artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: native-artifacts-ubuntu-latest
+          path: ./release-artifacts || true
+
+      - name: Download native artifacts (windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: native-artifacts-windows-latest
+          path: ./release-artifacts || true
+
+      - name: Download native artifacts (macos)
+        uses: actions/download-artifact@v4
+        with:
+          name: native-artifacts-macos-latest
+          path: ./release-artifacts || true
+
+      - name: List release artifacts
+        run: ls -lah release-artifacts || true
+
       - name: Create GitHub Release and upload artifacts
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
+          files: release-artifacts/*
 
       - name: Compute tarball sha256 and print Homebrew info
         run: |
           set -e
-          TAR=$(ls dist/*.tar.gz | head -n1)
+          TAR=$(ls release-artifacts/*.tar.gz 2>/dev/null | head -n1 || true)
           if [ -z "$TAR" ]; then
-            echo "No sdist tarball found in dist/" >&2
-            exit 1
+            echo "No tarball found in release-artifacts/" >&2
+            exit 0
           fi
-          # Compute sha256 (sha256sum available on ubuntu runners)
-          SHA=$(sha256sum "$TAR" | awk '{print $1}')
+          if command -v sha256sum >/dev/null 2>&1; then
+            SHA=$(sha256sum "$TAR" | awk '{print $1}')
+          else
+            SHA=$(shasum -a 256 "$TAR" | awk '{print $1}')
+          fi
           echo "Tarball: $TAR"
           echo "SHA256: $SHA"
           echo "Release tag: ${{ github.ref_name }}"
           echo "Suggested Homebrew formula url: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/$(basename $TAR)"
-          echo "You can update \`Formula/passgen.rb\` with that url and sha256 to publish to your tap."
