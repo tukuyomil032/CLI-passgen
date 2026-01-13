@@ -14,7 +14,7 @@ def build_with_pyinstaller():
 
     # Use OS-aware path separator for PyInstaller add-data argument
     sep = os.pathsep
-    add_data = f"CLI_passgen{sep}CLI_passgen"
+    add_data = f"passgen_cli{sep}passgen_cli"
 
     subprocess.run([
         sys.executable, "-m", "PyInstaller",
@@ -22,7 +22,7 @@ def build_with_pyinstaller():
         "--name", "passgen",
         "--clean",
         "--add-data", add_data,
-        "CLI_passgen/main.py"
+        "passgen_cli/main.py"
     ], check=True)
 
     # Avoid using non-ASCII characters to prevent encoding errors on Windows
