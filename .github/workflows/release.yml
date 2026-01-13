@@ -59,15 +59,22 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Prepare macOS Rosetta (for macOS amd64 builds)
+        if: matrix.os == 'macos-latest' && matrix.arch == 'amd64'
+        run: |
+          sudo softwareupdate --install-rosetta --agree-to-license || true
+
       - name: Install PyInstaller
         shell: bash
         run: |
           set -euo pipefail
           # upgrade pip for the current python
           python -m pip install --upgrade pip || true
-          # On macOS x86_64 we must install under Rosetta (arch -x86_64)
           if [ "${{ matrix.os }}" = "macos-latest" ] && [ "${{ matrix.arch }}" = "amd64" ]; then
-            arch -x86_64 /usr/bin/python3 -m pip install pyinstaller
+            # Use Rosetta to run x86_64 Python pip
+            arch -x86_64 /usr/bin/env python3 -m pip install pyinstaller
+          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
+            python -m pip install pyinstaller
           else
             python -m pip install pyinstaller
           fi
@@ -76,15 +83,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          PREFIX=""
           if [ "${{ matrix.os }}" = "macos-latest" ] && [ "${{ matrix.arch }}" = "amd64" ]; then
-            PREFIX="arch -x86_64 "
-          fi
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            # Use the default python on Windows runner
+            arch -x86_64 /usr/bin/env python3 scripts/build.py
+          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
             python scripts/build.py
           else
-            eval "${PREFIX}python scripts/build.py"
+            python scripts/build.py
           fi
 
       - name: Package binary
@@ -94,7 +98,8 @@ jobs:
           mkdir -p release-artifacts
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             if [ -f dist/passgen.exe ]; then
-              zip -j release-artifacts/passgen-windows-${{ matrix.arch }}.zip dist/passgen.exe
+              # Use Python to create a ZIP on Windows runners where `zip` may be missing
+              python -c "import zipfile;zf=zipfile.ZipFile('release-artifacts/passgen-windows-{}.zip'.format('${{ matrix.arch }}'),'w',zipfile.ZIP_DEFLATED);zf.write('dist/passgen.exe','passgen.exe');zf.close();print('Created release-artifacts/passgen-windows-{}.zip'.format('${{ matrix.arch }}'))"
             else
               echo "Expected dist/passgen.exe not found" >&2; exit 2
             fi
