@@ -2,6 +2,10 @@
 
 Lightweight password generation CLI tool
 
+<img width="451" height="147" alt="SCR-20260114-bgrj" src="https://github.com/user-attachments/assets/a9063b58-f964-4733-917d-1bbe6e4d9cff" />
+
+
+
 
 ## Features
 
