@@ -4,6 +4,7 @@
 import subprocess
 import sys
 import shutil
+import os
 from pathlib import Path
 
 
@@ -11,16 +12,21 @@ def build_with_pyinstaller():
     """Build standalone executable using PyInstaller."""
     print("Building standalone executable with PyInstaller...")
 
+    # Use OS-aware path separator for PyInstaller add-data argument
+    sep = os.pathsep
+    add_data = f"CLI_passgen{sep}CLI_passgen"
+
     subprocess.run([
         sys.executable, "-m", "PyInstaller",
         "--onefile",
         "--name", "passgen",
         "--clean",
-        "--add-data", "passgen_cli:passgen_cli",
-        "passgen_cli/main.py"
+        "--add-data", add_data,
+        "CLI_passgen/main.py"
     ], check=True)
 
-    print("\n✓ Build complete!")
+    # Avoid using non-ASCII characters to prevent encoding errors on Windows
+    print("\nBuild complete!")
     print("  Executable: dist/passgen")
 
 
@@ -35,7 +41,7 @@ def build_with_shiv():
         "."
     ], check=True)
 
-    print("\n✓ Build complete!")
+    print("\nBuild complete!")
     print("  Executable: dist/passgen.pyz")
 
 

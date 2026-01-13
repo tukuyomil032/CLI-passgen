@@ -41,7 +41,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            arch: amd64
+          - os: windows-latest
+            arch: amd64
+          - os: macos-latest
+            arch: amd64
+          - os: macos-latest
+            arch: arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,13 +60,32 @@ jobs:
           python-version: '3.x'
 
       - name: Install PyInstaller
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install pyinstaller
+          set -euo pipefail
+          # upgrade pip for the current python
+          python -m pip install --upgrade pip || true
+          # On macOS x86_64 we must install under Rosetta (arch -x86_64)
+          if [ "${{ matrix.os }}" = "macos-latest" ] && [ "${{ matrix.arch }}" = "amd64" ]; then
+            arch -x86_64 /usr/bin/python3 -m pip install pyinstaller
+          else
+            python -m pip install pyinstaller
+          fi
 
       - name: Build standalone executable
+        shell: bash
         run: |
-          python scripts/build.py
+          set -euo pipefail
+          PREFIX=""
+          if [ "${{ matrix.os }}" = "macos-latest" ] && [ "${{ matrix.arch }}" = "amd64" ]; then
+            PREFIX="arch -x86_64 "
+          fi
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            # Use the default python on Windows runner
+            python scripts/build.py
+          else
+            eval "${PREFIX}python scripts/build.py"
+          fi
 
       - name: Package binary
         shell: bash
@@ -66,21 +93,20 @@ jobs:
           set -euo pipefail
           mkdir -p release-artifacts
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            # zip the exe
             if [ -f dist/passgen.exe ]; then
-              zip -j release-artifacts/passgen-windows-amd64.zip dist/passgen.exe
+              zip -j release-artifacts/passgen-windows-${{ matrix.arch }}.zip dist/passgen.exe
             else
               echo "Expected dist/passgen.exe not found" >&2; exit 2
             fi
           elif [ "${{ matrix.os }}" = "macos-latest" ]; then
             if [ -f dist/passgen ]; then
-              tar -czf release-artifacts/passgen-macos-amd64.tar.gz -C dist passgen
+              tar -czf release-artifacts/passgen-macos-${{ matrix.arch }}.tar.gz -C dist passgen
             else
               echo "Expected dist/passgen not found" >&2; exit 2
             fi
           else
             if [ -f dist/passgen ]; then
-              tar -czf release-artifacts/passgen-linux-amd64.tar.gz -C dist passgen
+              tar -czf release-artifacts/passgen-linux-${{ matrix.arch }}.tar.gz -C dist passgen
             else
               echo "Expected dist/passgen not found" >&2; exit 2
             fi
@@ -89,7 +115,7 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: native-artifacts-${{ matrix.os }}
+          name: native-artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: release-artifacts/*
 
   publish-release:
@@ -106,22 +132,28 @@ jobs:
           name: python-dists
           path: ./release-artifacts
 
-      - name: Download native artifacts
+      - name: Download native artifacts (linux)
         uses: actions/download-artifact@v4
         with:
-          name: native-artifacts-ubuntu-latest
+          name: native-artifacts-ubuntu-latest-amd64
           path: ./release-artifacts || true
 
       - name: Download native artifacts (windows)
         uses: actions/download-artifact@v4
         with:
-          name: native-artifacts-windows-latest
+          name: native-artifacts-windows-latest-amd64
           path: ./release-artifacts || true
 
-      - name: Download native artifacts (macos)
+      - name: Download native artifacts (macos x86_64)
         uses: actions/download-artifact@v4
         with:
-          name: native-artifacts-macos-latest
+          name: native-artifacts-macos-latest-amd64
+          path: ./release-artifacts || true
+
+      - name: Download native artifacts (macos arm64)
+        uses: actions/download-artifact@v4
+        with:
+          name: native-artifacts-macos-latest-arm64
           path: ./release-artifacts || true
 
       - name: List release artifacts
