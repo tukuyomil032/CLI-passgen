@@ -18,25 +18,25 @@
 
 ##### Using npm
 ```bash
-npm install -g passgen-cli
+npm install -g @tukuyomil032/passgen
 passgen
 ```
 
 ##### Using pnpm
 ```bash
-pnpm add -g passgen-cli
+pnpm add -g @tukuyomil032/passgen
 passgen
 ```
 
 ##### Using yarn
 ```bash
-yarn global add passgen-cli
+yarn global add @tukuyomil032/passgen
 passgen
 ```
 
 ##### Using bun
 ```bash
-bun add -g passgen-cli
+bun add -g @tukuyomil032/passgen
 passgen
 ```
 

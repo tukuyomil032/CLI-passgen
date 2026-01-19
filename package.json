@@ -1,6 +1,6 @@
 {
-  "name": "passgen-cli",
-  "version": "1.0.0",
+  "name": "@tukuyomil032/passgen",
+  "version": "1.0.1",
   "description": "A customizable password generator CLI tool",
   "type": "module",
   "main": "./dist/main.js",
