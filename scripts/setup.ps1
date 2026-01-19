@@ -1,20 +1,20 @@
-# passgen-cli Windows 自動セットアップ (PowerShell)
-# 対応: Windows 10/11
+# passgen-cli Windows Automatic Setup (PowerShell)
+# Supported: Windows 10/11
 
 param(
     [switch]$Help
 )
 
 if ($Help) {
-    Write-Host "passgen-cli Windows セットアップスクリプト"
+    Write-Host "passgen-cli Windows Setup Script"
     Write-Host ""
-    Write-Host "使用方法:"
+    Write-Host "Usage:"
     Write-Host "  .\setup.ps1"
     Write-Host ""
     exit 0
 }
 
-# 色定義
+# Color definitions
 $Colors = @{
     Red    = "Red"
     Green  = "Green"
@@ -23,95 +23,88 @@ $Colors = @{
     Blue   = "Blue"
 }
 
-# バナー
+# Display banner
 Write-Host ""
-Write-Host "╔════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║                                                                ║" -ForegroundColor Cyan
-Write-Host "║           🔐 passgen-cli インストール開始                    ║" -ForegroundColor Cyan
-Write-Host "║              システム: Windows                               ║" -ForegroundColor Cyan
-Write-Host "║                                                                ║" -ForegroundColor Cyan
-Write-Host "╚════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+Write-Host "🔐 passgen-cli Installation Starting" -ForegroundColor Cyan
+Write-Host "System: Windows" -ForegroundColor Green
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 Write-Host ""
 
-# Node.js チェック
+# Check Node.js
 $NodeInstalled = $null -ne (Get-Command node -ErrorAction SilentlyContinue)
 if (-not $NodeInstalled) {
-    Write-Host "❌ エラー: Node.js がインストールされていません" -ForegroundColor Red
+    Write-Host "❌ Error: Node.js is not installed" -ForegroundColor Red
     Write-Host ""
-    Write-Host "インストール手順:"
-    Write-Host "  1. https://nodejs.org/ja/ にアクセス"
-    Write-Host "  2. LTS版をダウンロードしてインストール"
-    Write-Host "  3. PowerShellを再起動して再度このスクリプトを実行"
+    Write-Host "Please visit https://nodejs.org/ to download and install Node.js (v18 or higher)"
     Write-Host ""
     exit 1
 }
 
-# Node.js バージョン確認
+# Check Node.js version
 $NodeVersion = [int]((node -v) -replace "v", "" -split "\.")[0]
 if ($NodeVersion -lt 18) {
-    Write-Host "❌ エラー: Node.js 18 以上が必要です（現在: v$NodeVersion）" -ForegroundColor Red
+    Write-Host "❌ Error: Node.js 18 or higher is required (current: v$NodeVersion)" -ForegroundColor Red
     exit 1
 }
 
-Write-Host "✓ Node.js チェック完了" -ForegroundColor Green
+Write-Host "✓ Node.js verified" -ForegroundColor Green
 Write-Host ""
 
-# pnpm チェック・インストール
+# Check/Install pnpm
 $PnpmInstalled = $null -ne (Get-Command pnpm -ErrorAction SilentlyContinue)
 if (-not $PnpmInstalled) {
-    Write-Host "📦 pnpm をインストール中..." -ForegroundColor Yellow
+    Write-Host "📦 Installing pnpm..." -ForegroundColor Yellow
     npm install -g pnpm
     Write-Host ""
 }
 
-Write-Host "✓ pnpm チェック完了" -ForegroundColor Green
+Write-Host "✓ pnpm verified" -ForegroundColor Green
 Write-Host ""
 
-# 依存パッケージ インストール
-Write-Host "📦 依存パッケージをインストール中..." -ForegroundColor Yellow
+# Install dependencies
+Write-Host "📦 Installing dependencies..." -ForegroundColor Yellow
 pnpm install
 
-Write-Host "✓ パッケージインストール完了" -ForegroundColor Green
+Write-Host "✓ Dependencies installed" -ForegroundColor Green
 Write-Host ""
 
-# TypeScript コンパイル
-Write-Host "🔨 TypeScript をコンパイル中..." -ForegroundColor Yellow
+# Build TypeScript
+Write-Host "🔨 Building TypeScript..." -ForegroundColor Yellow
 pnpm build
 
-Write-Host "✓ コンパイル完了" -ForegroundColor Green
+Write-Host "✓ Build complete" -ForegroundColor Green
 Write-Host ""
 
-# グローバルコマンド登録
-Write-Host "🌍 グローバルコマンドを登録中..." -ForegroundColor Yellow
+# Register global command
+Write-Host "🌍 Registering global command..." -ForegroundColor Yellow
 pnpm install -g .
 
-Write-Host "✓ グローバル登録完了" -ForegroundColor Green
+Write-Host "✓ Global registration complete" -ForegroundColor Green
 Write-Host ""
 
-# 完成メッセージ
-Write-Host "╔════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║                    ✅ インストール完了！                       ║" -ForegroundColor Cyan
-Write-Host "╚════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+# Success message
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+Write-Host "✅ Installation Successful!" -ForegroundColor Cyan
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 Write-Host ""
 
-Write-Host "📝 使用方法:" -ForegroundColor Green
+Write-Host "📝 Usage:" -ForegroundColor Green
 Write-Host ""
-Write-Host "  💻 対話型モード（推奨）:" -ForegroundColor Cyan
+Write-Host "  💻 Interactive mode (recommended):" -ForegroundColor Cyan
 Write-Host "     > passgen"
 Write-Host ""
-Write-Host "  🔐 16文字のパスワード生成:" -ForegroundColor Cyan
+Write-Host "  🔐 Generate 16-character password:" -ForegroundColor Cyan
 Write-Host "     > passgen -l 16"
 Write-Host ""
-Write-Host "  📋 複数生成（5個×32文字、全文字種）:" -ForegroundColor Cyan
+Write-Host "  📋 Generate multiple passwords (5x 32 chars, all character types):" -ForegroundColor Cyan
 Write-Host "     > passgen -l 32 -n -a -A -s -c 5"
 Write-Host ""
-Write-Host "  🎲 ランダム文字種で生成:" -ForegroundColor Cyan
+Write-Host "  🎲 Generate with random character types:" -ForegroundColor Cyan
 Write-Host "     > passgen -l 24 -r"
 Write-Host ""
-Write-Host "  ❓ ヘルプを表示:" -ForegroundColor Cyan
+Write-Host "  ❓ Show help:" -ForegroundColor Cyan
 Write-Host "     > passgen --help"
 Write-Host ""
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "✨ これであなたも passgen ユーザーです！楽しんでください🎉" -ForegroundColor Green
+Write-Host "✨ Enjoy using passgen!" -ForegroundColor Green
 Write-Host ""

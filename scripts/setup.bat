@@ -1,92 +1,85 @@
 @echo off
-REM passgen-cli Windows セットアップスクリプト (Batch版)
-REM 対応: Windows CMD
+REM passgen-cli Windows Automatic Setup (Batch)
+REM Supported: Windows CMD
 
 setlocal enabledelayedexpansion
 
 echo.
-echo ╔════════════════════════════════════════════════════════════════╗
-echo ║                                                                ║
-echo ║           🔐 passgen-cli インストール開始                    ║
-echo ║              システム: Windows (CMD)                          ║
-echo ║                                                                ║
-echo ╚════════════════════════════════════════════════════════════════╝
+echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo 🔐 passgen-cli Installation Starting
+echo System: Windows (CMD)
+echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo.
 
-REM Node.js チェック
+REM Check Node.js
 where node >nul 2>nul
 if errorlevel 1 (
-    echo ❌ エラー: Node.js がインストールされていません
+    echo ❌ Error: Node.js is not installed
     echo.
-    echo インストール手順:
-    echo   1. https://nodejs.org/ja/ にアクセス
-    echo   2. LTS版をダウンロードしてインストール
-    echo   3. CMD/PowerShellを再起動して再度このスクリプトを実行
+    echo Please visit https://nodejs.org/ to download and install Node.js (v18 or higher)
     echo.
     exit /b 1
 )
 
-echo ✓ Node.js チェック完了
+echo ✓ Node.js verified
 echo.
 
-REM pnpm チェック・インストール
+REM Check/Install pnpm
 where pnpm >nul 2>nul
 if errorlevel 1 (
-    echo 📦 pnpm をインストール中...
+    echo 📦 Installing pnpm...
     call npm install -g pnpm
     echo.
 )
 
-echo ✓ pnpm チェック完了
+echo ✓ pnpm verified
 echo.
 
-REM 依存パッケージ インストール
-echo 📦 依存パッケージをインストール中...
+REM Install dependencies
+echo 📦 Installing dependencies...
 call pnpm install
 
-echo ✓ パッケージインストール完了
+echo ✓ Dependencies installed
 echo.
 
-REM TypeScript コンパイル
-echo 🔨 TypeScript をコンパイル中...
+REM Build TypeScript
+echo 🔨 Building TypeScript...
 call pnpm build
 
-echo ✓ コンパイル完了
+echo ✓ Build complete
 echo.
 
-REM グローバルコマンド登録
-echo 🌍 グローバルコマンドを登録中...
+REM Register global command
+echo 🌍 Registering global command...
 call pnpm install -g .
 
-echo ✓ グローバル登録完了
+echo ✓ Global registration complete
 echo.
 
-REM 完成メッセージ
-echo ╔════════════════════════════════════════════════════════════════╗
-echo ║                    ✅ インストール完了！                       ║
-echo ╚════════════════════════════════════════════════════════════════╝
+REM Success message
+echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo ✅ Installation Successful!
+echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo.
 
-echo 📝 使用方法:
+echo 📝 Usage:
 echo.
-echo   💻 対話型モード（推奨）:
+echo   💻 Interactive mode (recommended):
 echo      ^> passgen
 echo.
-echo   🔐 16文字のパスワード生成:
+echo   🔐 Generate 16-character password:
 echo      ^> passgen -l 16
 echo.
-echo   📋 複数生成（5個×32文字、全文字種）:
+echo   📋 Generate multiple passwords (5x 32 chars, all character types):
 echo      ^> passgen -l 32 -n -a -A -s -c 5
 echo.
-echo   🎲 ランダム文字種で生成:
+echo   🎲 Generate with random character types:
 echo      ^> passgen -l 24 -r
 echo.
-echo   ❓ ヘルプを表示:
+echo   ❓ Show help:
 echo      ^> passgen --help
 echo.
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo.
-echo ✨ これであなたも passgen ユーザーです！楽しんでください🎉
+echo ✨ Enjoy using passgen!
 echo.
 
 endlocal

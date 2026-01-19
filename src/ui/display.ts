@@ -28,11 +28,6 @@ export const Colors = {
 };
 
 export class Display {
-  static readonly BANNER_TOP = `${Colors.CYAN}╔══════════════════════════════════════════════════════════════════╗${Colors.RESET}`;
-  static readonly BANNER_MID = `${Colors.CYAN}╠══════════════════════════════════════════════════════════════════╣${Colors.RESET}`;
-  static readonly BANNER_BOT = `${Colors.CYAN}╚══════════════════════════════════════════════════════════════════╝${Colors.RESET}`;
-  static readonly BANNER_VER = `${Colors.CYAN}║${Colors.DIM}            Secure Password Generator v${VERSION}             ${Colors.CYAN}║${Colors.RESET}`;
-
   static readonly PASSGEN_ART = [
     "  ██████╗  █████╗ ███████╗███████╗ ██████╗ ███████╗███╗   ██╗  ",
     "  ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝ ██╔════╝████╗  ██║  ",
