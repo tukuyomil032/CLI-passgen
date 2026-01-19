@@ -1,0 +1,39 @@
+{
+  "name": "passgen-cli",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A customizable password generator CLI tool",
+  "type": "module",
+  "main": "./dist/main.js",
+  "bin": {
+    "passgen": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/main.js",
+    "dev": "ts-node --esm src/main.ts",
+    "start": "node dist/main.js",
+    "postinstall": "pnpm build",
+    "install-global": "pnpm build && pnpm link --global"
+  },
+  "keywords": [
+    "password",
+    "generator",
+    "cli",
+    "security"
+  ],
+  "author": "tukuyomil032",
+  "license": "MIT",
+  "dependencies": {
+    "clipboardy": "^4.0.0",
+    "inquirer": "^9.2.11",
+    "ora": "^8.0.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.3",
+    "@types/node": "^20.10.6",
+    "@types/yargs": "^17.0.24",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@10.27.0"
+}
