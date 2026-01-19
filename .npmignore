@@ -1,0 +1,24 @@
+# Source files - not needed for npm
+src/
+scripts/
+
+# Config files not needed for npm users
+tsconfig.json
+.editorconfig
+.prettierignore
+.prettierrc
+.npmrc
+
+# Development tools
+.vscode/
+.idea/
+.git/
+.gitignore
+.DS_Store
+
+# Logs and other
+*.log
+pnpm-lock.yaml
+
+# Development dependencies
+node_modules/

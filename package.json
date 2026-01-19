@@ -1,6 +1,5 @@
 {
   "name": "passgen-cli",
-  "private": true,
   "version": "1.0.0",
   "description": "A customizable password generator CLI tool",
   "type": "module",
@@ -12,17 +11,25 @@
     "build": "tsc && chmod +x dist/main.js",
     "dev": "ts-node --esm src/main.ts",
     "start": "node dist/main.js",
-    "postinstall": "pnpm build",
-    "install-global": "pnpm build && pnpm link --global"
+    "postinstall": "pnpm build"
   },
   "keywords": [
     "password",
     "generator",
     "cli",
-    "security"
+    "security",
+    "crypto"
   ],
   "author": "tukuyomil032",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tukuyomil032/CLI-passgen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tukuyomil032/CLI-passgen/issues"
+  },
+  "homepage": "https://github.com/tukuyomil032/CLI-passgen#readme",
   "dependencies": {
     "clipboardy": "^4.0.0",
     "inquirer": "^9.2.11",

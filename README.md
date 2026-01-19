@@ -1,135 +1,163 @@
 # passgen-cli
 
-🔐 軽量でシンプルなパスワード生成CLIツール（TypeScript版）
+🔐 A lightweight and simple password generator CLI tool
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node.js](https://img.shields.io/badge/node.js-18%2B-brightgreen)
 
-## 🚀 クイックスタート
+## 🚀 Quick Start
 
-### 前提条件
-- **Node.js 18+** 
-- **pnpm** （なければ自動インストール）
+### Prerequisites
+- **Node.js 18+**
+- **npm**, **pnpm**, **yarn**, or **bun**
 
-### インストール
+### Installation
 
-#### macOS / Linux
+#### For End Users
+
+##### Using npm
+```bash
+npm install -g passgen-cli
+passgen
+```
+
+##### Using pnpm
+```bash
+pnpm add -g passgen-cli
+passgen
+```
+
+##### Using yarn
+```bash
+yarn global add passgen-cli
+passgen
+```
+
+##### Using bun
+```bash
+bun add -g passgen-cli
+passgen
+```
+
+#### For Developers (Local Development)
+
+##### macOS / Linux
 ```bash
 git clone https://github.com/tukuyomil032/CLI-passgen.git
 cd CLI-passgen
 bash scripts/setup.sh
 ```
 
-#### Windows (PowerShell)
+##### Windows (PowerShell)
 ```powershell
 git clone https://github.com/tukuyomil032/CLI-passgen.git
 cd CLI-passgen
 .\scripts\setup.ps1
 ```
 
-#### Windows (CMD)
+##### Windows (CMD)
 ```cmd
 git clone https://github.com/tukuyomil032/CLI-passgen.git
 cd CLI-passgen
 scripts\setup.bat
 ```
 
-## 📖 使い方
+## 📖 Usage
 
-### 対話型モード（推奨）
+### Interactive Mode (Recommended)
 ```bash
 passgen
 ```
-文字タイプ、長さ、コピー先を対話的に選択できます。
+Select character types, password length, and copy destination interactively.
 
-### コマンドラインオプション
+### Command-line Options
 ```bash
-# 16文字生成
+# Generate a 16-character password
 passgen -l 16
 
-# 複数生成（5個×32文字、全文字種）
+# Generate 5 passwords, 32 characters each, with all character types
 passgen -l 32 -n -a -A -s -c 5
 
-# ランダム文字種
+# Generate with random character types
 passgen -l 24 -r
 
-# ヘルプ
+# Display help
 passgen --help
 ```
 
-### オプション一覧
-- `-l, --length` - パスワード長（デフォルト: 16）
-- `-c, --count` - 生成数（デフォルト: 1）
-- `-n` - 数字を含める
-- `-a` - 小文字を含める
-- `-A` - 大文字を含める
-- `-s` - 記号を含める
-- `-r` - ランダム文字種
-- `-q, --quiet` - 出力を最小化
-- `--copy / --no-copy` - クリップボードコピー制御
+### Available Options
+- `-l, --length` - Password length (default: 16)
+- `-c, --count` - Number of passwords to generate (default: 1)
+- `-n` - Include numbers (0-9)
+- `-a` - Include lowercase letters (a-z)
+- `-A` - Include uppercase letters (A-Z)
+- `-s` - Include special characters
+- `-r` - Randomly select character types
+- `-q, --quiet` - Minimize output
+- `--copy / --no-copy` - Control clipboard copy behavior
 
-## 🔐 セキュリティ
+## 🔐 Security
 
-- `crypto.randomInt()` による暗号学的に安全なランダム生成
-- すべての入力を検証
-- TypeScript による型安全
+- Cryptographically secure random generation using `crypto.randomInt()`
+- All inputs are validated
+- Full type safety with TypeScript
 
-## ✨ 機能
+## ✨ Features
 
-- 🔐 暗号学的に安全なパスワード生成
-- 🎨 ANSIカラー対応の美しいUI
-- 💬 対話型モード
-- 📋 自動クリップボードコピー
-- ⚡ クロスプラットフォーム対応 (macOS/Linux/Windows)
-- 🎯 複数のCLIオプション
+- 🔐 Cryptographically secure password generation
+- 🎨 Beautiful ANSI color support
+- 💬 Interactive mode
+- 📋 Automatic clipboard copy
+- ⚡ Cross-platform support (macOS/Linux/Windows)
+- 🎯 Multiple CLI options
 
-## 🛠️ 技術スタック
+## 🛠️ Tech Stack
 
-| 技術 | バージョン | 用途 |
-|-----|----------|------|
-| TypeScript | 5.3+ | 言語 |
-| Node.js | 18+ | ランタイム |
-| pnpm | 最新 | パッケージ管理 |
-| yargs | 17.7.2 | CLI引数解析 |
-| inquirer | 9.2.11 | 対話入力 |
-| ora | 8.0.1 | スピナー表示 |
-| clipboardy | 4.0.0 | クリップボード操作 |
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| TypeScript | 5.3+ | Language |
+| Node.js | 18+ | Runtime |
+| pnpm | Latest | Package manager |
+| yargs | 17.7.2 | CLI argument parsing |
+| inquirer | 9.2.11 | Interactive prompts |
+| ora | 8.0.1 | Spinner display |
+| clipboardy | 4.0.0 | Clipboard operations |
 
-## 📦 開発
+## 📦 Development
 
-### ローカル開発
+### Local Development Setup
 ```bash
 pnpm install
-pnpm dev          # ts-nodeで直実行
-pnpm build        # TypeScriptをコンパイル
-pnpm link --global # グローバルにリンク
+pnpm dev          # Run with ts-node
+pnpm build        # Compile TypeScript
+pnpm link --global # Link globally for development
 ```
 
-
-## 📁 プロジェクト構成
+## 📁 Project Structure
 
 ```
 CLI-passgen/
-├── src/                    # TypeScript ソースコード
-│   ├── main.ts             # CLI エントリーポイント
-│   ├── core/               # コア機能
-│   │   ├── generator.ts    # パスワード生成
-│   │   ├── clipboard.ts    # クリップボード操作
-│   │   └── constants.ts    # 定数定義
-│   └── ui/                 # UI 表示
-│       ├── display.ts      # 画面描画
-│       └── interactive.ts  # 対話型入力
-├── scripts/                # セットアップスクリプト
-│   ├── setup.sh            # macOS/Linux 用
-│   ├── setup.ps1           # Windows PowerShell 用
-│   └── setup.bat           # Windows CMD 用
-├── package.json            # NPM 設定
-├── tsconfig.json           # TypeScript 設定
-└── README.md               # このファイル
+├── src/                    # TypeScript source code
+│   ├── main.ts             # CLI entry point
+│   ├── core/               # Core functionality
+│   │   ├── generator.ts    # Password generation logic
+│   │   ├── clipboard.ts    # Clipboard operations
+│   │   └── constants.ts    # Constants and character sets
+│   └── ui/                 # UI components
+│       ├── display.ts      # Display rendering
+│       └── interactive.ts  # Interactive mode
+├── scripts/                # Setup scripts (for developers)
+│   ├── setup.sh            # macOS/Linux setup
+│   ├── setup.ps1           # Windows PowerShell setup
+│   └── setup.bat           # Windows CMD setup
+├── dist/                   # Compiled JavaScript (generated)
+├── package.json            # NPM configuration
+├── tsconfig.json           # TypeScript configuration
+└── README.md               # This file
 ```
 
-## 📄 ライセンス
+## 📄 License
 
 MIT
 
